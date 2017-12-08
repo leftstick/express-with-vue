@@ -3,19 +3,13 @@
         <header class="header">
           <h1>todos</h1>
         </header>
-        <router-view id="view"></router-view>
+        <router-view></router-view>
     </div>
 </template>
 
 <script>
-// import { mapActions } from 'vuex'
 
 export default {
-  data() {
-    return {
-      
-    }
-  }
 }
 </script>
 

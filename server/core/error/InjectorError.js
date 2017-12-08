@@ -1,9 +1,5 @@
 const ExtendableError = require('./ExtendableError')
 
-class InjectorError extends ExtendableError {
-  constructor(message) {
-    super(message)
-  }
-}
+class InjectorError extends ExtendableError {}
 
 module.exports = InjectorError

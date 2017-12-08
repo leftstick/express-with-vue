@@ -61,7 +61,7 @@ const wapperRouteHandler = (handler, mod) => {
   const serviceClasses = injection.findDIKeys(handler)
 
   return function(req, res, next) {
-    const services = serviceClasses.map(s => new s())
+    const services = serviceClasses.map(S => new S())
 
     handler(req, res, ...services).catch(function(err) {
       if (err instanceof InvalidParamsError) {

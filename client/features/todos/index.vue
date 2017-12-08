@@ -19,22 +19,11 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      todoList: 'todo/todoList',
-      isAllCompleted: 'todo/isAllCompleted',
-      remainingCount: 'todo/remainingCount',
-      filter: 'todo/filter'
-    })
+    ...mapGetters('todo', ['todoList', 'isAllCompleted', 'remainingCount', 'filter'])
   },
 
   methods: {
-    ...mapActions({
-      getAllTodos: 'todo/getAllTodos',
-      addTodo: 'todo/addTodo',
-      toggleAll: 'todo/toggleAll',
-      updateFilter: 'todo/updateFilter',
-      cleanCompleteTodos: 'todo/cleanCompleteTodos'
-    })
+    ...mapActions('todo', ['getAllTodos', 'addTodo', 'toggleAll', 'updateFilter', 'cleanCompleteTodos'])
   },
 
   components: {

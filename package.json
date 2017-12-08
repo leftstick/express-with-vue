@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "predist": "rm -rf public/assets",
+    "predist": "rm -rf public/assets && npm run lint",
     "dist": "webpack --config compile/webpack.config.prod.js",
-    "patch": "node patch/index.js"
+    "lint": "eslint app.js client server env"
   },
   "dependencies": {
     "axios": "^0.17.1",

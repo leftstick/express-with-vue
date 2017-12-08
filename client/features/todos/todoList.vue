@@ -16,12 +16,7 @@ import todoItem from './todoItem'
 
 export default {
   computed: {
-    ...mapGetters({
-      loading: 'todo/loading',
-      todoList: 'todo/todoList',
-      editTodo: 'todo/editTodo',
-      filter: 'todo/filter'
-    }),
+    ...mapGetters('todo', ['loading', 'todoList', 'editTodo', 'filter']),
     list() {
       return this.todoList.filter(todo => {
         if (this.filter === 'all') {
@@ -35,11 +30,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions({
-      deleteTodo: 'todo/deleteTodo',
-      updateTodo: 'todo/updateTodo',
-      setEditTodo: 'todo/setEditTodo'
-    })
+    ...mapActions('todo', ['deleteTodo', 'updateTodo', 'setEditTodo'])
   },
   components: {
     todoItem

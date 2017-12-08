@@ -1,9 +1,5 @@
 const ExtendableError = require('./ExtendableError')
 
-class NotExist extends ExtendableError {
-  constructor(message) {
-    super(message)
-  }
-}
+class NotExist extends ExtendableError {}
 
 module.exports = NotExist

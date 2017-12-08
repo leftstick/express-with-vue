@@ -5,7 +5,7 @@ const InjectorError = require('../error/InjectorError')
 
 const SERVICE_DIR = resolve(__dirname, '..', '..', 'service')
 
-const FN_ARGS = /^[^\(]*\(\s*([^\)]*)\)/m
+const FN_ARGS = /^[^(]*\(\s*([^)]*)\)/m
 const FN_ARG_SPLIT = /,/
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm
 
@@ -48,8 +48,8 @@ function stringifyFn(fn) {
 }
 
 function extractArgs(fn) {
-  const fnText = stringifyFn(fn).replace(STRIP_COMMENTS, ''),
-    args = fnText.match(FN_ARGS)
+  const fnText = stringifyFn(fn).replace(STRIP_COMMENTS, '')
+  const args = fnText.match(FN_ARGS)
   return args
 }
 

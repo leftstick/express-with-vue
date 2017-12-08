@@ -1,9 +1,5 @@
 const ExtendableError = require('./ExtendableError')
 
-class InvalidParamsError extends ExtendableError {
-  constructor(message) {
-    super(message)
-  }
-}
+class InvalidParamsError extends ExtendableError {}
 
 module.exports = InvalidParamsError
