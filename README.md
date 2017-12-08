@@ -5,7 +5,7 @@ express-with-vue
 
 A damn easy customizable web application skeleton based [express.js](http://expressjs.com/) + [vue](https://vuejs.org/)
 
-** Demonstration **
+**Demonstration**
 
 ![](./docs/demo.gif)
 
