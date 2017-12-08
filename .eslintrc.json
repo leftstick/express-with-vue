@@ -1,0 +1,12 @@
+{
+    "parser": "babel-eslint",
+    "parserOptions":{
+        "ecmaVersion": 6,
+        "sourceType": "module"
+    },
+    "extends": ["standard", "prettier", "prettier/standard"],
+    "plugins": ["prettier", "vue", "standard"],
+    "rules": {
+      "prettier/prettier": "error"
+    }
+}

@@ -1,5 +1,14 @@
-# Object file
-*.o
+#npm
+node_modules/
+npm-debug.log
 
-# Ada Library Information
-*.ali
+#log
+log/
+
+
+#generated assets
+public/assets
+
+#osx
+.DS_Store
+package-lock.json
