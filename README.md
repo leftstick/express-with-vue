@@ -28,6 +28,17 @@ npm start
 
 For more information, see [Development Guide](./docs/document.md)
 
+## Release ##
+
+```bash
+#compile frontend assets
+npm run dist
+
+#launch server
+NODE_ENV=production port=8080 npm start
+```
+
+>Now the released portal is available at: [http://localhost:8080](http://localhost:8080)
 
 ## LICENSE ##
 

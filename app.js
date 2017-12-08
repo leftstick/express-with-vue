@@ -5,11 +5,15 @@ const configExpress = require('./server/core/express')
 const setupAPIRoutes = require('./server/api')
 const setupIndexRoutes = require('./server/entry')
 
-run().catch(err => {
-  console.log(err)
-  setTimeout(function() {
-    process.exit(-1)
-  }, 2000)
+const clusterGo = require('./server/core/cluster')
+
+clusterGo(() => {
+  run().catch(err => {
+    console.log(err)
+    setTimeout(function() {
+      process.exit(-1)
+    }, 2000)
+  })
 })
 
 async function run() {
