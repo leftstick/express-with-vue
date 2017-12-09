@@ -3,7 +3,7 @@ const express = require('express')
 const setupExtensions = require('./server/core/extension')
 const configExpress = require('./server/core/express')
 const setupAPIRoutes = require('./server/api')
-const setupIndexRoutes = require('./server/entry')
+const setupIndexHTMLRoutes = require('./server/entry')
 
 const clusterGo = require('./server/core/cluster')
 
@@ -23,7 +23,7 @@ async function run() {
   configExpress(app)
 
   setupAPIRoutes(app)
-  setupIndexRoutes(app)
+  setupIndexHTMLRoutes(app)
 
   await app.launch()
 }
