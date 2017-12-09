@@ -1,5 +1,6 @@
 const cluster = require('cluster')
-const numWorkers = require('os').cpus().length
+const { isDev } = require('../util/env')
+const numWorkers = isDev ? 1 : require('os').cpus().length
 
 module.exports = function(appSetup) {
   if (cluster.isMaster) {
