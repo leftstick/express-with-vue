@@ -3,7 +3,7 @@ express-with-vue
 ![][david-url]
 ![][license-url]
 
-A damn easy customizable web application skeleton based [express.js](http://expressjs.com/) + [vue](https://vuejs.org/)
+A damn easy customizable web application skeleton based on [express.js](http://expressjs.com/) + [vue](https://vuejs.org/)
 
 **Demonstration**
 
