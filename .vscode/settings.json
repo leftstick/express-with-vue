@@ -1,5 +1,6 @@
 {
     "editor.insertSpaces": true,
     "editor.tabSize": 2,
-    "prettier.eslintIntegration": true
+    "prettier.eslintIntegration": true,
+    "editor.formatOnSave": true
 }

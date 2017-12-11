@@ -9,9 +9,7 @@ const { skipUnderline } = require('../core/util/Method')
 
 const EXPECTED_ERRORS = ['DuplicatedError', 'InvalidParamsError', 'NotExistError']
 
-const injection = new Injection()
-
-injection.loadClasses()
+const injection = new Injection().loadClasses()
 
 const skipIndex = file => file !== 'index.js'
 
@@ -58,7 +56,7 @@ const logErrors = err => {
 
 const wapperRouteHandler = (handler, mod) => {
   const { route } = mod
-  const serviceClasses = injection.findDIKeys(handler)
+  const serviceClasses = injection.findControllerDIKeys(handler)
 
   return function(req, res, next) {
     const services = serviceClasses.map(S => new S())
