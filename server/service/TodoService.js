@@ -1,58 +1,29 @@
-const util = require('util')
-const memored = require('memored')
 const InvalidParamsError = require('../core/error/InvalidParamsError')
 const { id } = require('../core/util/String')
 
-const read = util.promisify(memored.read.bind(memored))
-const store = util.promisify(memored.store.bind(memored))
-
-let todos = [
-  {
-    id: id(),
-    text: 'Learn JavaScript',
-    completed: true
-  },
-  {
-    id: id(),
-    text: 'Learn Angular.js',
-    completed: true
-  },
-  {
-    id: id(),
-    text: 'Learn vue',
-    completed: false
-  },
-  {
-    id: id(),
-    text: 'Learn React.js',
-    completed: false
-  }
-]
-
-memored.store('todolist', todos, function() {
-  console.log('Value stored!')
-})
-
 class TodoService {
+  constructor(MemoryService) {
+    this.MemoryService = MemoryService
+  }
   async getAllTodos() {
-    const todos = await read('todolist')
+    const todos = await this.MemoryService.get('todolist')
     return todos
   }
 
   async getTodoById(id) {
-    const todos = await read('todolist')
+    const todos = await this.MemoryService.get('todolist')
     return todos.find(t => t.id === id)
   }
 
   async saveTodo(opts) {
-    const todos = await read('todolist')
+    const todos = await this.MemoryService.get('todolist')
     const todo = {
       id: id(),
       text: opts.text,
       completed: opts.completed
     }
     todos.unshift(todo)
-    await store('todolist', todos)
+    await this.MemoryService.save('todolist', todos)
     return todo
   }
 
@@ -60,7 +31,7 @@ class TodoService {
     if (!id) {
       throw new InvalidParamsError('[id] is missing in path')
     }
-    const todos = await read('todolist')
+    const todos = await this.MemoryService.get('todolist')
     const found = todos.find(t => t.id === id)
 
     if (!found) {
@@ -76,7 +47,7 @@ class TodoService {
       return t
     })
 
-    await store('todolist', newtodos)
+    await this.MemoryService.save('todolist', newtodos)
     return newtodo
   }
 
@@ -84,30 +55,30 @@ class TodoService {
     if (!id) {
       throw new InvalidParamsError('[id] is missing in path')
     }
-    const todos = await read('todolist')
+    const todos = await this.MemoryService.get('todolist')
     const found = todos.find(t => t.id === id)
 
     const newtodos = todos.filter(t => t.id !== id)
 
-    await store('todolist', newtodos)
+    await this.MemoryService.save('todolist', newtodos)
 
     return found
   }
 
   async updateTodosStatus(opts) {
-    const todos = await read('todolist')
+    const todos = await this.MemoryService.get('todolist')
     const newtodos = todos.map(todo => {
       todo.completed = opts.completed
       return todo
     })
-    await store('todolist', newtodos)
+    await this.MemoryService.save('todolist', newtodos)
     return true
   }
 
   async deleteTodos(opts) {
-    const todos = await read('todolist')
+    const todos = await this.MemoryService.get('todolist')
     const newtodos = todos.filter(todo => todo.completed === !opts.completed)
-    await store('todolist', newtodos)
+    await this.MemoryService.save('todolist', newtodos)
     return todos
   }
 }

@@ -1,5 +1,6 @@
 const fs = require('fs')
 const { resolve } = require('path')
+const Dependency = require('./dependency')
 const { skipUnderline } = require('../util/Method')
 const InjectorError = require('../error/InjectorError')
 
@@ -12,7 +13,8 @@ const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm
 
 class Injection {
   constructor() {
-    this.services = []
+    this.loadedServiceClasses = []
+    this.dependencies = {}
   }
 
   loadClasses() {
@@ -22,47 +24,88 @@ class Injection {
       .filter(f => fs.statSync(resolve(SERVICE_DIR, f)).isFile())
       .map(f => require(resolve(SERVICE_DIR, f)))
 
-    this.services.push(...services)
+    this.loadedServiceClasses.push(...services)
 
     return this
   }
 
-  findControllerDI(func) {
-    const entryServiceClasses = this.findControllerDIKeys(func)
-    const serviceInstances = {}
+  registerDependencies(entryKey, func) {
+    const entryServiceClassNames = this._findControllerDINames(func)
+    this.dependencies[entryKey] = []
+    for (let i = 0; i < entryServiceClassNames.length; i++) {
+      const className = entryServiceClassNames[i]
+      const clazz = this.loadedServiceClasses.find(c => c.name === className)
 
-    serviceClasses.forEach(serviceClass => {
-      const serviceDIs = this.findServiceDIKeys(serviceClass)
-    })
+      this.dependencies[entryKey].push(this._registerDependency(clazz))
+    }
   }
 
-  _getDIInstances(serviceClass, serviceInstances) {
-    const serviceDIs = this.findServiceDIKeys(serviceClass)
+  _registerDependency(clazz) {
+    const dependNames = this._findServiceDIKeys(clazz)
+    const dependClasses = dependNames.map(name => this.loadedServiceClasses.find(c => c.name === name))
+
+    this._checkCircularDependency(dependClasses, clazz.name, clazz.name)
+
+    return new Dependency(clazz, dependClasses.map(d => this._registerDependency(d)))
   }
 
-  findControllerDIKeys(func) {
+  _checkCircularDependency(dependClasses, className, currentName) {
+    for (let i = 0; i < dependClasses.length; i++) {
+      const clazz = dependClasses[i]
+      if (clazz.name === className) {
+        throw new Error(`You cannot have circular dependency between ${className} and ${currentName}`)
+      }
+      const dependNames = this._findServiceDIKeys(clazz)
+      const nextDependClasses = dependNames.map(name => this.loadedServiceClasses.find(c => c.name === name))
+      this._checkCircularDependency(nextDependClasses, className, clazz.name)
+    }
+  }
+
+  findControllerDIs(entryKey) {
+    if (this.dependencies[entryKey]) {
+      return this._resolveDependencyInstances(this.dependencies[entryKey])
+    }
+    throw new Error(`Unknow entryKey [${entryKey}]`)
+  }
+
+  _resolveDependencyInstances(dependencies) {
+    return dependencies.map(depend => this._getDIInstance(depend, {}))
+  }
+
+  _getDIInstance(depend, instancesCache) {
+    if (instancesCache[depend.clazz.name]) {
+      return instancesCache[depend.clazz.name]
+    }
+    /* eslint-disable */
+    const instance = new depend['clazz'](...depend.depends.map(d => this._getDIInstance(d, instancesCache)))
+    /* eslint-enable */
+    instancesCache[depend.clazz.name] = instance
+    return instance
+  }
+
+  _findControllerDINames(func) {
     const keys = extractArgs(func)[1]
       .split(FN_ARG_SPLIT)
       .slice(2)
       .map(arg => arg.replace(/\s+/, ''))
 
-    this.checkServiceExist(keys)
+    this._checkServiceExist(keys)
 
-    return this.services.filter(s => keys.indexOf(s.name) > -1)
+    return keys
   }
 
-  findServiceDIKeys(cls) {
-    const keys = extractConstrucArgs(cls)[1]
+  _findServiceDIKeys(cls) {
+    const extractArgs = extractConstrucArgs(cls)
+    const keys = ((extractArgs && extractArgs[1]) || '')
       .split(FN_ARG_SPLIT)
       .map(arg => arg.replace(/\s+/, ''))
+      .filter(arg => !!arg)
 
-    this.checkServiceExist(keys)
-
-    return this.services.filter(s => keys.indexOf(s.name) > -1)
+    return keys
   }
 
-  checkServiceExist(classNames) {
-    const nonExist = classNames.filter(key => this.services.every(s => s.name !== key))
+  _checkServiceExist(classNames) {
+    const nonExist = classNames.filter(key => this.loadedServiceClasses.every(s => s.name !== key))
     if (nonExist.length) {
       const msg = `You are trying to inject non-existing service [${nonExist[0]}] in handler`
       throw new InjectorError(msg)

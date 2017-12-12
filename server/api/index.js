@@ -54,14 +54,13 @@ const logErrors = err => {
   console.error(err)
 }
 
-const wapperRouteHandler = (handler, mod) => {
+const wapperRouteHandler = (handler, verb, mod) => {
   const { route } = mod
-  const serviceClasses = injection.findControllerDIKeys(handler)
+  const entryKey = `${verb}-${mod.route.api}`
+  injection.registerDependencies(entryKey, handler)
 
   return function(req, res, next) {
-    const services = serviceClasses.map(S => new S())
-
-    handler(req, res, ...services).catch(function(err) {
+    handler(req, res, ...injection.findControllerDIs(entryKey)).catch(function(err) {
       if (err instanceof InvalidParamsError) {
         return res.sendError(400, err)
       }
@@ -81,7 +80,7 @@ const registerRoute = app => {
     Object.keys(mod.route)
       .filter(verb => API_VERBS.indexOf(verb) > -1)
       .forEach(verb => {
-        router[verb](wapperRouteHandler(mod.route[verb], mod))
+        router[verb](wapperRouteHandler(mod.route[verb], verb, mod))
       })
   }
 }
