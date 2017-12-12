@@ -41,14 +41,23 @@ class Injection {
 
   _registerDependency(clazz) {
     const dependNames = this._findServiceDIKeys(clazz)
-    const dependClasses = dependNames.map(name => this.loadedServiceClasses.find(c => c.name === name))
+    const dependClasses = dependNames.map(name => {
+      const found = this.loadedServiceClasses.find(c => c.name === name)
+      if (!found) {
+        throw new Error(`You are injecting non-exist service [${name}]`)
+      }
+      return found
+    })
 
-    this._checkCircularDependency(dependClasses, clazz.name, clazz.name)
+    this._checkCircularDependency(dependClasses, clazz.name, clazz.name, 1)
 
     return new Dependency(clazz, dependClasses.map(d => this._registerDependency(d)))
   }
 
-  _checkCircularDependency(dependClasses, className, currentName) {
+  _checkCircularDependency(dependClasses, className, currentName, count) {
+    if (count === 10) {
+      throw new Error(`You have circular dependencies, please check your services`)
+    }
     for (let i = 0; i < dependClasses.length; i++) {
       const clazz = dependClasses[i]
       if (clazz.name === className) {
@@ -56,7 +65,7 @@ class Injection {
       }
       const dependNames = this._findServiceDIKeys(clazz)
       const nextDependClasses = dependNames.map(name => this.loadedServiceClasses.find(c => c.name === name))
-      this._checkCircularDependency(nextDependClasses, className, clazz.name)
+      this._checkCircularDependency(nextDependClasses, className, clazz.name, count + 1)
     }
   }
 

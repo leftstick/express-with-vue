@@ -79,7 +79,7 @@ class TodoService {
     const todos = await this.MemoryService.get('todolist')
     const newtodos = todos.filter(todo => todo.completed === !opts.completed)
     await this.MemoryService.save('todolist', newtodos)
-    return todos
+    return newtodos
   }
 }
 
