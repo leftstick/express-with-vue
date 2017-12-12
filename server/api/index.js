@@ -1,32 +1,26 @@
-const fs = require('fs')
 const path = require('path')
+const glob = require('glob')
 
 const Injection = require('../core/di')
 const InvalidParamsError = require('../core/error/InvalidParamsError')
 const { API_VERBS } = require('../core/util/constant')
 const { isString, isNull } = require('../core/util/Object')
-const { skipUnderline } = require('../core/util/Method')
 
 const EXPECTED_ERRORS = ['DuplicatedError', 'InvalidParamsError', 'NotExistError']
 
 const injection = new Injection().loadClasses()
 
-const skipIndex = file => file !== 'index.js'
+function getAPIModules() {
+  const files = glob.sync('**/*.js', {
+    cwd: path.resolve(__dirname),
+    ignore: ['index.js', '**/_*.js']
+  })
 
-const skipModel = file => file !== 'model'
-
-const getAPIModules = file => {
-  const files = fs.readdirSync(path.resolve(__dirname, file))
-  return files
-    .filter(skipUnderline)
-    .filter(skipModel)
-    .map(f => ({
-      file: `${file}/${f}`,
-      route: require(`./${file}/${f}`)
-    }))
+  return files.map(file => ({
+    file,
+    route: require(`./${file}`)
+  }))
 }
-
-const flattenAPIModules = (p, c) => p.concat(c)
 
 const skipApiWithoutApiField = mod => {
   if (mod.route.api) {
@@ -86,13 +80,7 @@ const registerRoute = app => {
 }
 
 module.exports = function(app) {
-  const files = fs.readdirSync(__dirname)
-
-  files
-    .filter(skipUnderline)
-    .filter(skipIndex)
-    .map(getAPIModules)
-    .reduce(flattenAPIModules)
+  getAPIModules()
     .filter(skipApiWithoutApiField)
     .filter(skipApiWithIncorrectCollectionField)
     .forEach(registerRoute(app))

@@ -1,7 +1,6 @@
-const fs = require('fs')
+const glob = require('glob')
 const { resolve } = require('path')
 const Dependency = require('./dependency')
-const { skipUnderline } = require('../util/Method')
 const InjectorError = require('../error/InjectorError')
 
 const SERVICE_DIR = resolve(__dirname, '..', '..', 'service')
@@ -18,11 +17,11 @@ class Injection {
   }
 
   loadClasses() {
-    const files = fs.readdirSync(SERVICE_DIR)
-    const services = files
-      .filter(skipUnderline)
-      .filter(f => fs.statSync(resolve(SERVICE_DIR, f)).isFile())
-      .map(f => require(resolve(SERVICE_DIR, f)))
+    const files = glob.sync('**/*.js', {
+      cwd: SERVICE_DIR,
+      ignore: ['**/_*.js']
+    })
+    const services = files.map(f => require(resolve(SERVICE_DIR, f)))
 
     this.loadedServiceClasses.push(...services)
 
