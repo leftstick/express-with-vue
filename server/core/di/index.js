@@ -69,25 +69,26 @@ class Injection {
     }
   }
 
-  findControllerDIs(entryKey) {
+  findControllerDIs(entryKey, ctx) {
     if (this.dependencies[entryKey]) {
-      return this._resolveDependencyInstances(this.dependencies[entryKey])
+      return this._resolveDependencyInstances(this.dependencies[entryKey], ctx)
     }
     throw new Error(`Unknow entryKey [${entryKey}]`)
   }
 
-  _resolveDependencyInstances(dependencies) {
-    return dependencies.map(depend => this._getDIInstance(depend, {}))
+  _resolveDependencyInstances(dependencies, ctx) {
+    return dependencies.map(depend => this._getDIInstance(depend, ctx, {}))
   }
 
-  _getDIInstance(depend, instancesCache) {
+  _getDIInstance(depend, ctx, instancesCache) {
     if (instancesCache[depend.clazz.name]) {
       return instancesCache[depend.clazz.name]
     }
     /* eslint-disable */
-    const instance = new depend['clazz'](...depend.depends.map(d => this._getDIInstance(d, instancesCache)))
+    const instance = new depend['clazz'](...depend.depends.map(d => this._getDIInstance(d, ctx, instancesCache)))
     /* eslint-enable */
     instancesCache[depend.clazz.name] = instance
+    instance.ctx = ctx
     return instance
   }
 

@@ -49,8 +49,11 @@ if (isDev) {
 }
 
 class MemoryService {
-  get(key) {
-    return read(key)
+  async get(key) {
+    this.ctx.logStart('MemoryService')
+    const result = await read(key)
+    this.ctx.logEnd('MemoryService')
+    return result
   }
 
   save(key, value) {

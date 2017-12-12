@@ -56,9 +56,7 @@ const wapperRouteHandler = (handler, verb, mod) => {
 
   return function(req, res, next) {
     res.ctx = new Context(req && req.query && req.query.perfLogger)
-    const services = injection.findControllerDIs(entryKey)
-
-    wrapWithContext(services, res.ctx)
+    const services = injection.findControllerDIs(entryKey, res.ctx)
 
     handler(req, res, ...services).catch(function(err) {
       if (err instanceof InvalidParamsError) {
@@ -83,12 +81,6 @@ const registerRoute = app => {
         router[verb](wapperRouteHandler(mod.route[verb], verb, mod))
       })
   }
-}
-
-function wrapWithContext(services, ctx) {
-  services.forEach(s => {
-    s.ctx = ctx
-  })
 }
 
 module.exports = function(app) {
