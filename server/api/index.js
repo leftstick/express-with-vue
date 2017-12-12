@@ -5,6 +5,7 @@ const Injection = require('../core/di')
 const InvalidParamsError = require('../core/error/InvalidParamsError')
 const { API_VERBS } = require('../core/util/constant')
 const { isString, isNull } = require('../core/util/Object')
+const Context = require('../core/performance/context')
 
 const EXPECTED_ERRORS = ['DuplicatedError', 'InvalidParamsError', 'NotExistError']
 
@@ -54,7 +55,12 @@ const wapperRouteHandler = (handler, verb, mod) => {
   injection.registerDependencies(entryKey, handler)
 
   return function(req, res, next) {
-    handler(req, res, ...injection.findControllerDIs(entryKey)).catch(function(err) {
+    res.ctx = new Context(req && req.query && req.query.perfLogger)
+    const services = injection.findControllerDIs(entryKey)
+
+    wrapWithContext(services, res.ctx)
+
+    handler(req, res, ...services).catch(function(err) {
       if (err instanceof InvalidParamsError) {
         return res.sendError(400, err)
       }
@@ -77,6 +83,12 @@ const registerRoute = app => {
         router[verb](wapperRouteHandler(mod.route[verb], verb, mod))
       })
   }
+}
+
+function wrapWithContext(services, ctx) {
+  services.forEach(s => {
+    s.ctx = ctx
+  })
 }
 
 module.exports = function(app) {

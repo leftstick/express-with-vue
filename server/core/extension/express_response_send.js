@@ -1,8 +1,10 @@
 module.exports = function(app) {
   app.response.sendApi = function(data) {
-    this.json({
-      data
-    })
+    const result = { data }
+    if (this.ctx.isEnabled()) {
+      result.performance = this.ctx.resolve()
+    }
+    this.json(result)
   }
 
   app.response.sendServerError = function(err) {

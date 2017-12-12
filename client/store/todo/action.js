@@ -22,8 +22,8 @@ function deleteTodo({ commit }, todo) {
 }
 
 function addTodo({ commit }, todo) {
-  axios.post(`/api/todo`, todo).then(() => {
-    commit('addTodo', todo)
+  axios.post(`/api/todo`, todo).then(res => {
+    commit('addTodo', res.data.data)
   })
 }
 

@@ -28,16 +28,19 @@ class TodoService {
   }
 
   async updateTodo(id, opts) {
+    this.ctx.logStart('updateTodo+gettodolist')
     if (!id) {
       throw new InvalidParamsError('[id] is missing in path')
     }
     const todos = await this.MemoryService.get('todolist')
+    this.ctx.logEnd('updateTodo+gettodolist')
     const found = todos.find(t => t.id === id)
 
     if (!found) {
       throw new InvalidParamsError(`Specific [${id}] non-exist`)
     }
 
+    this.ctx.logStart('updateTodo+modify')
     const newtodo = Object.assign({}, found, opts)
 
     const newtodos = todos.map(t => {
@@ -48,6 +51,8 @@ class TodoService {
     })
 
     await this.MemoryService.save('todolist', newtodos)
+
+    this.ctx.logEnd('updateTodo+modify')
     return newtodo
   }
 
