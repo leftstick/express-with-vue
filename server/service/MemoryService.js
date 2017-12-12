@@ -1,9 +1,7 @@
 const util = require('util')
 const memored = require('memored')
+const { isDev } = require('../core/util/env')
 const { id } = require('../core/util/String')
-
-const read = util.promisify(memored.read.bind(memored))
-const store = util.promisify(memored.store.bind(memored))
 
 let todos = [
   {
@@ -28,9 +26,27 @@ let todos = [
   }
 ]
 
-memored.store('todolist', todos, function() {
-  console.log('Value stored!')
-})
+let read, store
+
+const storage = {
+  todolist: todos
+}
+
+if (isDev) {
+  read = async function(key) {
+    return storage[key]
+  }
+
+  store = async function(key, value) {
+    storage[key] = value
+  }
+} else {
+  read = util.promisify(memored.read.bind(memored))
+  store = util.promisify(memored.store.bind(memored))
+  memored.store('todolist', todos, function() {
+    console.log('Value stored!')
+  })
+}
 
 class MemoryService {
   get(key) {
