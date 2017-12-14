@@ -14,6 +14,7 @@ class Injection {
   constructor() {
     this.loadedServiceClasses = []
     this.dependencies = {}
+    this.circularDependency = {}
   }
 
   loadClasses() {
@@ -49,23 +50,32 @@ class Injection {
       return found
     })
 
-    this._checkCircularDependency(dependClasses, clazz.name, clazz.name, 1)
+    this._checkCircularDependency(dependClasses, 1)
 
     return new Dependency(clazz, dependClasses.map(d => this._registerDependency(d)))
   }
 
-  _checkCircularDependency(dependClasses, className, currentName, count) {
+  _checkCircularDependency(dependClasses, count) {
     if (count === 10) {
-      throw new Error(`You have circular dependencies, please check your services`)
+      const res = Object.keys(this.circularDependency)
+        .map(k => ({ key: k, value: this.circularDependency[k] }))
+        .sort((a, b) => {
+          if (a.value < b.value) {
+            return 1
+          }
+          if (a.value > b.value) {
+            return -1
+          }
+          return 0
+        })
+      throw new Error(`You have circular dependencies between ${res[0].key} and ${res[1].key}`)
     }
     for (let i = 0; i < dependClasses.length; i++) {
       const clazz = dependClasses[i]
-      if (clazz.name === className) {
-        throw new Error(`You cannot have circular dependency between ${className} and ${currentName}`)
-      }
+      this.circularDependency[clazz.name] = ++this.circularDependency[clazz.name] || 1
       const dependNames = this._findServiceDIKeys(clazz)
       const nextDependClasses = dependNames.map(name => this.loadedServiceClasses.find(c => c.name === name))
-      this._checkCircularDependency(nextDependClasses, className, clazz.name, count + 1)
+      this._checkCircularDependency(nextDependClasses, count + 1)
     }
   }
 
