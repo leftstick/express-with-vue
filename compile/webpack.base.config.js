@@ -13,13 +13,18 @@ module.exports = function(isDev) {
           use: ['style-loader', 'css-loader']
         },
         {
+          enforce: 'pre',
+          test: /\.vue$/,
+          loader: 'eslint-loader',
+          exclude: /node_modules/
+        },
+        {
           test: /\.vue$/,
           use: [
             {
               loader: 'vue-loader',
               options: {
                 loaders: {
-                  js: 'babel-loader!eslint-loader',
                   postcss: 'vue-style-loader!css-loader!postcss-loader' + (isDev ? '?sourceMap=true' : '')
                 },
                 preserveWhitespace: false
