@@ -72,23 +72,23 @@ export default {
     right: 0;
     left: 0;
     li {
-        display: inline-block;
-        a {
-            color: inherit;
-            margin: 3px;
-            padding: 3px 7px;
-            text-decoration: none;
-            border: 1px solid transparent;
-            border-radius: 3px;
-        }
+      display: inline-block;
+      a {
+        color: inherit;
+        margin: 3px;
+        padding: 3px 7px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        border-radius: 3px;
+      }
 
-        a.selected {
-            border-color: rgba(175,47,47,.2);
-        }
+      a.selected {
+        border-color: rgba(175, 47, 47, 0.2);
+      }
 
-        a:hover {
-            border-color: rgba(175,47,47,.1);
-        }
+      a:hover {
+        border-color: rgba(175, 47, 47, 0.1);
+      }
     }
   }
 
@@ -112,7 +112,7 @@ export default {
   }
 
   .clear-completed:hover {
-      text-decoration: underline;
+    text-decoration: underline;
   }
 }
 </style>

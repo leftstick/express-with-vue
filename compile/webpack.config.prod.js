@@ -6,6 +6,7 @@ const base = require('./webpack.base.config')
 const root = resolve(__dirname, '..')
 
 module.exports = merge(base(false), {
+  mode: 'production',
   entry: {
     app: resolve(root, 'client', 'index.js')
   },
@@ -18,11 +19,6 @@ module.exports = merge(base(false), {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
       }
     })
   ]

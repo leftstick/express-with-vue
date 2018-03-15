@@ -1,5 +1,4 @@
 const { resolve } = require('path')
-const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const root = resolve(__dirname, '..')
@@ -48,18 +47,6 @@ module.exports = function(isDev) {
       extensions: ['.js', '.vue']
     },
     plugins: [
-      new webpack.HotModuleReplacementPlugin(),
-      new webpack.optimize.ModuleConcatenationPlugin(),
-      new webpack.optimize.CommonsChunkPlugin({
-        name: 'vendor',
-        minChunks: function(module) {
-          // a module is extracted into the vendor chunk if...
-          return (
-            // it's inside node_modules
-            /node_modules/.test(module.context)
-          )
-        }
-      }),
       new HtmlWebpackPlugin({
         filename: 'index.html',
         template: resolve(root, 'client', 'index.html'),
