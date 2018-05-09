@@ -1,44 +1,52 @@
 const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { VueLoaderPlugin } = require('vue-loader')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const autoprefixer = require('autoprefixer-stylus')
 
 const root = resolve(__dirname, '..')
 
-module.exports = function(isDev) {
+module.exports.workspace = resolve(__dirname, '..')
+
+module.exports.base = function(isDev) {
   return {
     module: {
       rules: [
         {
           test: /\.css$/,
-          use: ['style-loader', 'css-loader']
+          use: (!isDev ? [MiniCssExtractPlugin.loader] : ['vue-style-loader']).concat(['css-loader'])
         },
         {
           enforce: 'pre',
-          test: /\.vue$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/
+          test: /\.(js|vue)$/,
+          exclude: /node_modules/,
+          use: ['eslint-loader']
         },
         {
           test: /\.vue$/,
+          use: ['vue-loader']
+        },
+        {
+          test: /\.styl(us)?$/,
           use: [
+            'vue-style-loader',
+            'css-loader',
             {
-              loader: 'vue-loader',
+              loader: 'stylus-loader',
               options: {
-                loaders: {
-                  postcss: 'vue-style-loader!css-loader!postcss-loader' + (isDev ? '?sourceMap=true' : '')
-                },
-                preserveWhitespace: false
+                use: [autoprefixer()]
               }
             }
           ]
         },
         {
           test: /\.js$/,
-          use: ['babel-loader', 'eslint-loader'],
+          use: ['babel-loader'],
           exclude: /node_modules/
         },
         {
-          test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)\w*/,
-          use: ['file-loader']
+          test: /\.(png|jpg|gif|svg|ttf|woff|eot|woff2)$/,
+          use: ['url-loader']
         }
       ]
     },
@@ -47,6 +55,7 @@ module.exports = function(isDev) {
       extensions: ['.js', '.vue']
     },
     plugins: [
+      new VueLoaderPlugin(),
       new HtmlWebpackPlugin({
         filename: 'index.html',
         template: resolve(root, 'client', 'index.html'),

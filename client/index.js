@@ -5,7 +5,7 @@ import { createStore } from './store'
 import { createRouter } from './router'
 import application from './application'
 
-import { isDev } from '../server/core/util/env'
+import { isDev } from '../server/assistant/utils/env'
 
 Vue.config.devtools = isDev
 

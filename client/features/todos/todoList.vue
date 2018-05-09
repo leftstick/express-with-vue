@@ -38,10 +38,9 @@ export default {
 }
 </script>
  
-<style lang="postcss" scoped>
-.todo-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
+<style lang="stylus" scoped>
+.todo-list
+  margin 0
+  padding 0
+  list-style none
 </style>

@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 import todo from './todo'
 
-import { isDev } from '../../server/core/util/env'
+import { isDev } from '../../server/assistant/utils/env'
 
 Vue.use(Vuex)
 

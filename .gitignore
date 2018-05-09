@@ -7,7 +7,7 @@ log/
 
 
 #generated assets
-public/assets
+public/generated
 
 #osx
 .DS_Store

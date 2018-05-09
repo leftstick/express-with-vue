@@ -1,29 +1,29 @@
 const express = require('express')
 
-const setupExtensions = require('./server/core/extension')
-const configExpress = require('./server/core/express')
-const setupAPIRoutes = require('./server/api')
-const setupIndexHTMLRoutes = require('./server/entry')
+const { initIndexPageEntry } = require('./server/setup/entry')
+const { initStaticAssetsHandler } = require('./server/setup/staticAssets')
+const { initSession } = require('./server/setup/session')
+const { initRequestBodyParser } = require('./server/setup/requestBody')
+const { initCookieParser } = require('./server/setup/cookie')
+const { initAPIHandlers } = require('./server/setup/apis')
+const { initServerRunner } = require('./server/setup/serverRunner')
 
-const clusterGo = require('./server/core/cluster')
+const app = express()
 
-clusterGo(() => {
-  run().catch(err => {
-    console.log(err)
-    setTimeout(function() {
-      process.exit(-1)
-    }, 2000)
+initStaticAssetsHandler(app)
+initRequestBodyParser(app)
+initCookieParser(app)
+initSession(app)
+
+initAPIHandlers(app)
+
+initIndexPageEntry(app)
+
+initServerRunner(app)
+  .then(message => {
+    console.log(message)
   })
-})
-
-async function run() {
-  const app = express()
-
-  setupExtensions(app)
-  configExpress(app)
-
-  setupAPIRoutes(app)
-  setupIndexHTMLRoutes(app)
-
-  await app.launch()
-}
+  .catch(err => {
+    console.error(err.stack || err)
+    process.exit(-1)
+  })

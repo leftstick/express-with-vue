@@ -1,7 +1,4 @@
-const util = require('util')
-const memored = require('memored')
-const { isDev } = require('../core/util/env')
-const { id } = require('../core/util/String')
+const { id } = require('../assistant/utils/string')
 
 let todos = [
   {
@@ -26,33 +23,21 @@ let todos = [
   }
 ]
 
-let read, store
-
 const storage = {
   todolist: todos
 }
 
-if (isDev) {
-  read = async function(key) {
-    return storage[key]
-  }
+const read = async function(key) {
+  return storage[key]
+}
 
-  store = async function(key, value) {
-    storage[key] = value
-  }
-} else {
-  read = util.promisify(memored.read.bind(memored))
-  store = util.promisify(memored.store.bind(memored))
-  memored.store('todolist', todos, function() {
-    console.log('Value stored!')
-  })
+const store = async function(key, value) {
+  storage[key] = value
 }
 
 class MemoryService {
   async get(key) {
-    this.ctx.logStart('MemoryService')
     const result = await read(key)
-    this.ctx.logEnd('MemoryService')
     return result
   }
 
@@ -61,4 +46,4 @@ class MemoryService {
   }
 }
 
-module.exports = MemoryService
+module.exports = new MemoryService()

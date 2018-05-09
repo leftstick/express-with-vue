@@ -34,12 +34,11 @@ export default {
 }
 </script>
 
-<style lang="postcss" scoped>
-.todo-panel {
-  width: 100%;
-  background: #fff;
-  position: relative;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
-  font: 14px Helvetica Neue, Helvetica, Arial, sans-serif;
-}
+<style lang="stylus" scoped>
+.todo-panel
+  width 100%
+  background #fff
+  position relative
+  box-shadow 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1)
+  font 14px Helvetica Neue, Helvetica, Arial, sans-serif
 </style>

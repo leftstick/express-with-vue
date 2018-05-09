@@ -1,17 +1,16 @@
 const { resolve } = require('path')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
-const base = require('./webpack.base.config')
-
-const root = resolve(__dirname, '..')
+const { base, workspace } = require('./webpack.base.config')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = merge(base(false), {
   mode: 'production',
   entry: {
-    app: resolve(root, 'client', 'index.js')
+    app: resolve(workspace, 'client', 'index.js')
   },
   output: {
-    path: resolve(root, 'public', 'assets'),
+    path: resolve(workspace, 'public', 'generated'),
     filename: '[name].[hash].bundle.js',
     chunkFilename: '[name].[chunkhash].bundle.js'
   },
@@ -20,6 +19,12 @@ module.exports = merge(base(false), {
       'process.env': {
         NODE_ENV: '"production"'
       }
+    }),
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: '[name].css',
+      chunkFilename: '[id].css'
     })
   ]
 })

@@ -50,69 +50,61 @@ export default {
 }
 </script>
 
-<style lang="postcss" scoped>
-.todo-status {
-  color: #777;
-  padding: 10px 15px;
-  height: 20px;
-  text-align: center;
-  border-top: 1px solid #e6e6e6;
-  height: 35px;
+<style lang="stylus" scoped>
+.todo-status
+  color #777
+  padding 10px 15px
+  height 20px
+  text-align center
+  border-top 1px solid #e6e6e6
+  height 35px
 
-  .todo-count {
-    float: left;
-    text-align: left;
-  }
+  .todo-count
+    float left
+    text-align left
 
-  .filters {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    position: absolute;
-    right: 0;
-    left: 0;
-    li {
-      display: inline-block;
-      a {
-        color: inherit;
-        margin: 3px;
-        padding: 3px 7px;
-        text-decoration: none;
-        border: 1px solid transparent;
-        border-radius: 3px;
-      }
+  .filters
+    margin 0
+    padding 0
+    list-style none
+    position absolute
+    right 0
+    left 0
 
-      a.selected {
-        border-color: rgba(175, 47, 47, 0.2);
-      }
+    li
+      display inline-block
 
-      a:hover {
-        border-color: rgba(175, 47, 47, 0.1);
-      }
-    }
-  }
+      a
+        color inherit
+        margin 3px
+        padding 3px 7px
+        text-decoration none
+        border 1px solid transparent
+        border-radius 3px
 
-  .clear-completed,
-  .clear-completed:active {
-    float: right;
-    position: relative;
-    line-height: 20px;
-    text-decoration: none;
-    cursor: pointer;
-    border: 0;
-    background: none;
-    font-size: 100%;
-    vertical-align: baseline;
-    font-family: inherit;
-    font-weight: inherit;
-    color: inherit;
-    appearance: none;
-    font-smoothing: antialiased;
-    outline: none;
-  }
+      a.selected
+        border-color rgba(175, 47, 47, 0.2)
 
-  .clear-completed:hover {
-    text-decoration: underline;
-  }
-}
+      a:hover
+        border-color rgba(175, 47, 47, 0.1)
+
+  .clear-completed, .clear-completed:active
+    float right
+    position relative
+    line-height 20px
+    text-decoration none
+    cursor pointer
+    border 0
+    background none
+    font-size 100%
+    vertical-align baseline
+    font-family inherit
+    font-weight inherit
+    color inherit
+    appearance none
+    font-smoothing antialiased
+    outline none
+
+  .clear-completed:hover
+    text-decoration underline
 </style>
