@@ -1,5 +1,4 @@
-How to write a client View
-=========================
+# How to write a client View
 
 ```
 client
@@ -23,9 +22,9 @@ First, it's a router-based application, so let's go through the `client/router/i
 ```javascript
 import Vue from 'vue'
 import Router from 'vue-router'
- 
+
 Vue.use(Router)
- 
+
 export function createRouter() {
   return new Router({
     mode: 'history',
@@ -52,28 +51,24 @@ Next, let's create a `client/features/test/index.vue`
 
 ```html
 <template>
-    <div class="test">
-        hello {{ name }}, it is test view
-    </div>
+  <div class="test">hello {{ name }}, it is test view</div>
 </template>
- 
+
 <script>
-export default {
-  data() {
-    return {
-      name: 'world'
+  export default {
+    data() {
+      return {
+        name: 'world'
+      }
     }
   }
-}
 </script>
- 
+
 <style lang="postcss" scoped>
-.test {
-  font-size: 20px;
-}
+  .test {
+    font-size: 20px;
+  }
 </style>
 ```
 
 Now, you can re-launch the server, and try following [http://127.0.0.1:3000/test](http://127.0.0.1:3000/test) to see the newly added test view
-
-
