@@ -1,15 +1,15 @@
 <template>
-    <li :class="{completed: data.completed}" class="todo-item">
-      <div v-if="data !== editData">
-        <input class="toggle" type="checkbox" :checked="data.completed" @change.stop.prevent="_toggleStatus"/>
-        <label class="label" @dblclick="_setEditData(data)">{{data.text}}</label>
-        <button class="destroy" @click="_delete"/>
-      </div>
+  <li :class="{ completed: data.completed }" class="todo-item">
+    <div v-if="data !== editData">
+      <input class="toggle" type="checkbox" :checked="data.completed" @change.stop.prevent="_toggleStatus" />
+      <label class="label" @dblclick="_setEditData(data)">{{ data.text }}</label>
+      <button class="destroy" @click="_delete" />
+    </div>
 
-      <form v-if="data === editData" class="edit-form" @submit.stop.prevent="_finishEdit">
-        <input class="edit" v-model="editValue" @blur="_setEditData()"/>
-      </form>
-    </li>
+    <form v-if="data === editData" class="edit-form" @submit.stop.prevent="_finishEdit">
+      <input class="edit" v-model="editValue" @blur="_setEditData()" />
+    </form>
+  </li>
 </template>
 
 <script>

@@ -1,9 +1,15 @@
 <template>
-    <div class="todo-panel">
-      <todo-input :isAllCompleted="isAllCompleted" @addTodo="addTodo" @toggleAll="toggleAll"></todo-input>
-      <todo-list></todo-list>
-      <todo-status :todoList="todoList" :remainingCount="remainingCount" :filter="filter" @updateFilter="updateFilter" @cleanCompleteTodos="cleanCompleteTodos"></todo-status>
-    </div>
+  <div class="todo-panel">
+    <todo-input :isAllCompleted="isAllCompleted" @addTodo="addTodo" @toggleAll="toggleAll"></todo-input>
+    <todo-list></todo-list>
+    <todo-status
+      :todoList="todoList"
+      :remainingCount="remainingCount"
+      :filter="filter"
+      @updateFilter="updateFilter"
+      @cleanCompleteTodos="cleanCompleteTodos"
+    ></todo-status>
+  </div>
 </template>
 
 <script>

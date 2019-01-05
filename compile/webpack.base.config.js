@@ -51,7 +51,6 @@ module.exports.base = function(isDev) {
       ]
     },
     resolve: {
-      modules: [resolve(root, 'node_modules'), root, resolve(root, 'client')],
       extensions: ['.js', '.vue']
     },
     plugins: [

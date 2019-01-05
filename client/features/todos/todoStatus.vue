@@ -1,15 +1,18 @@
 <template>
   <div class="todo-status">
-    <span class="todo-count"><strong>{{ remainingCount }}</strong>&nbsp;{{ remainingUnit }}</span>
+    <span class="todo-count"
+      ><strong>{{ remainingCount }}</strong
+      >&nbsp;{{ remainingUnit }}</span
+    >
     <ul class="filters">
+      <li><a :class="{ selected: filter === 'all' }" href="" @click.stop.prevent="_updateFilter('all')">All</a></li>
       <li>
-        <a :class="{selected: filter === 'all'}" href="" @click.stop.prevent="_updateFilter('all')">All</a>
+        <a :class="{ selected: filter === 'active' }" href="" @click.stop.prevent="_updateFilter('active')">Active</a>
       </li>
       <li>
-        <a :class="{selected: filter === 'active'}" href="" @click.stop.prevent="_updateFilter('active')">Active</a>
-      </li>
-      <li>
-        <a :class="{selected: filter === 'completed'}" href="" @click.stop.prevent="_updateFilter('completed')">Completed</a>
+        <a :class="{ selected: filter === 'completed' }" href="" @click.stop.prevent="_updateFilter('completed')"
+          >Completed</a
+        >
       </li>
     </ul>
     <button v-if="todoList.length - remainingCount" class="clear-completed" @click="_cleanCompleteTodos">

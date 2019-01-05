@@ -1,13 +1,15 @@
 <template>
-    <ul class="todo-list">
-      <todo-item v-for="todo of list" 
-      :key="todo.id" 
-      :editData="editTodo" 
-      :data="todo" 
-      @delete="deleteTodo" 
-      @update="updateTodo" 
-      @setEdit="setEditTodo"></todo-item>
-    </ul>
+  <ul class="todo-list">
+    <todo-item
+      v-for="todo of list"
+      :key="todo.id"
+      :editData="editTodo"
+      :data="todo"
+      @delete="deleteTodo"
+      @update="updateTodo"
+      @setEdit="setEditTodo"
+    ></todo-item>
+  </ul>
 </template>
 
 <script>
@@ -37,7 +39,7 @@ export default {
   }
 }
 </script>
- 
+
 <style lang="stylus" scoped>
 .todo-list
   margin 0
