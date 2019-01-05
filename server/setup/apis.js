@@ -1,63 +1,100 @@
+const { readFileSync } = require('fs')
+const express = require('express')
+const { reap } = require('safe-reaper')
+const Parser = require('parse-comments')
 const { scanAPIs } = require('../assistant/utils/scanner')
-const { API_VERBS } = require('../assistant/utils/http')
+const router = express.Router()
 
-const ERRORS = require('../../errorcodes')
+const parser = new Parser()
 
-function getAPIModules() {
-  return scanAPIs()
-    .map(file => {
-      const mod = require(file)
-      return {
-        file,
-        mod
-      }
-    })
-    .filter(skipApiWithoutApiField)
-    .map(scannedValue => scannedValue.mod)
+const cachedRoute = {}
+
+const PREFIX = '/apis'
+
+module.exports.registerAPIs = function(app) {
+  const apis = scanAPIs()
+
+  const apiModules = apis.map(api => ({
+    filePath: api,
+    module: require(api),
+    code: readFileSync(api, { encoding: 'utf-8' })
+  }))
+
+  const routeInfos = apiModules.reduce((prev, apiModule) => {
+    return prev.concat(parseRouteInfo(apiModule))
+  }, [])
+
+  register(app, routeInfos)
 }
 
-function skipApiWithoutApiField(scannedValue) {
-  if (scannedValue.mod.api) {
-    return true
+/**
+ *
+ * @param {{filePath: string, module: object, code: string}} apiModule
+ */
+function parseRouteInfo(apiModule) {
+  const ast = parser.parse(apiModule.code)
+  const apiMethods = Object.keys(apiModule.module)
+
+  apisExposedShouldHaveDeclaration(apiMethods, ast)
+
+  const routeInfos = getRouteInfo(apiMethods, ast, apiModule.module)
+
+  for (let i = 0; i < routeInfos.length; i++) {
+    const routeInfo = routeInfos[i]
+
+    if (!routeInfo.api.startsWith('/')) {
+      throw new Error(`API ${routeInfo.httpMethod}_${routeInfo.api} is declared with incorrect @api`)
+    }
+    if (routeInfo.api[1] === '/') {
+      throw new Error(`API ${routeInfo.httpMethod}_${routeInfo.api} is declared with incorrect @api`)
+    }
+
+    if (cachedRoute[`${routeInfo.httpMethod}_${routeInfo.api}`]) {
+      throw new Error(
+        `You defined API [${routeInfo.httpMethod} ${routeInfo.api}] more than once, please verify your code first`
+      )
+    }
+    cachedRoute[`${routeInfo.httpMethod}_${routeInfo.api}`] = true
   }
-  console.error(`[WARN - api] miss api field in [${scannedValue.file}]`)
-  return false
+  return routeInfos
 }
 
-function wapperRouteHandler(handler, verb, mod) {
-  return function(req, res) {
-    handler(req, res)
-      .then(data => {
-        return res.json({
-          status: 'success',
-          data
-        })
-      })
-      .catch(function(err) {
-        if (err && err.rawError) {
-          return res.json({ error: { ...err.rawError, rawMessage: err.message }, status: 'failed' })
-        }
-        err.message = `[ERROR - api] [${mod.api}] = ${err.stack || err.message}`
-        console.error(err.message)
-        res.json({ error: ERRORS.SERVER_ERROR, status: 'failed' })
-      })
+function apisExposedShouldHaveDeclaration(apiMethods, ast) {
+  for (let i = 0; i < apiMethods.length; i++) {
+    const apiMethod = apiMethods[i]
+    if (ast.every(a => reap(a, 'code.context.name') !== apiMethod)) {
+      throw new Error(`You missed declaration for API [${apiMethod}]`)
+    }
   }
 }
 
-module.exports.initAPIHandlers = function(app) {
-  getAPIModules().forEach(mod => {
-    const fullApi = mod.api.startsWith('/') ? `/api${mod.api}` : `/api/${mod.api}`
-    const router = app.route(fullApi)
+/**
+ *
+ * @param {Array<string>} apiMethods
+ * @param {any} ast
+ * @param {Object} module
+ *
+ * @returns {Array<{apiHandler: Function, httpMethod: string, api: string}>}
+ */
+function getRouteInfo(apiMethods, ast, module) {
+  return apiMethods.map(apiMethod => {
+    const tags = ast.find(a => reap(a, 'code.context.name') === apiMethod).tags
+    return {
+      apiHandler: module[apiMethod],
+      httpMethod: (tags.find(tag => tag.title.toLowerCase() === 'method') || {}).name || '',
+      api: (tags.find(tag => tag.title.toLowerCase() === 'api') || {}).name || ''
+    }
+  })
+}
 
-    Object.keys(mod)
-      .filter(verb => API_VERBS.indexOf(verb) > -1)
-      .forEach(verb => {
-        const preHooks = mod.preHooks || []
-        router[verb](...preHooks, wapperRouteHandler(mod[verb], verb, mod))
-      })
+/**
+ *
+ * @param {Array<{apiHandler: Function, httpMethod: string, api: string}>} routeInfos
+ */
+function register(app, routeInfos) {
+  routeInfos.forEach(routeInfo => {
+    router[routeInfo.httpMethod](routeInfo.api, routeInfo.apiHandler)
   })
 
-  app.get(/^\/api\//, function response(req, res) {
-    res.json({ error: ERRORS.API_NOT_EXIST, status: 'failed' })
-  })
+  app.use(PREFIX, router)
 }

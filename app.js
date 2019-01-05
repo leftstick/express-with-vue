@@ -4,7 +4,7 @@ const { initIndexPageEntry } = require('./server/setup/entry')
 const { initStaticAssetsHandler } = require('./server/setup/staticAssets')
 const { initRequestBodyParser } = require('./server/setup/requestBody')
 const { initCookieParser } = require('./server/setup/cookie')
-const { initAPIHandlers } = require('./server/setup/apis')
+const { registerAPIs } = require('./server/setup/apis')
 const { initServerRunner } = require('./server/setup/serverRunner')
 
 const app = express()
@@ -13,7 +13,7 @@ initStaticAssetsHandler(app)
 initRequestBodyParser(app)
 initCookieParser(app)
 
-initAPIHandlers(app)
+registerAPIs(app)
 
 initIndexPageEntry(app)
 

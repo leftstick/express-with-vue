@@ -1,34 +1,37 @@
 import axios from 'axios'
 
+axios.defaults.baseURL = '/apis'
+
 function getAllTodos({ commit }) {
   commit('toggleFetchStatus', true)
 
-  axios.get('/api/todos').then(res => {
+  axios.get('/todos').then(res => {
+    console.log('res', res)
     commit('toggleFetchStatus', false)
     commit('updateTodoList', res.data.data)
   })
 }
 
 function updateTodo({ commit }, todo) {
-  axios.put(`/api/todo/${todo.id}`, todo).then(res => {
+  axios.put(`/todo/${todo.id}`, todo).then(res => {
     commit('updateTodo', res.data.data)
   })
 }
 
 function deleteTodo({ commit }, todo) {
-  axios.delete(`/api/todo/${todo.id}`).then(() => {
+  axios.delete(`/todo/${todo.id}`).then(() => {
     commit('deleteTodo', todo)
   })
 }
 
 function addTodo({ commit }, todo) {
-  axios.post(`/api/todo`, todo).then(res => {
+  axios.post(`/todo`, todo).then(res => {
     commit('addTodo', res.data.data)
   })
 }
 
 function toggleAll({ commit }, status) {
-  axios.put(`/api/todos`, { completed: status }).then(() => {
+  axios.put(`/todos`, { completed: status }).then(() => {
     commit('toggleAll', status)
   })
 }
@@ -42,7 +45,7 @@ function updateFilter({ commit }, filter) {
 }
 
 function cleanCompleteTodos({ commit }) {
-  axios.delete(`/api/todos`, { data: { completed: true } }).then(res => {
+  axios.delete(`/todos`, { data: { completed: true } }).then(res => {
     commit('cleanCompleteTodos', res.data.data)
   })
 }
